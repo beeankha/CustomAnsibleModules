@@ -1,0 +1,55 @@
+---
+- name: My playbook
+  hosts: localhost
+  connection: local
+  gather_facts: False
+
+  tasks:
+    - name: "Run addition module"
+      sum_module:
+        numbers:
+          - 3
+          - 5
+          - 9
+      register: sum_results
+    - debug:
+        var: sum_results
+
+    - name: "Roll default die the default number of times!"
+      dice_module:
+      register: dice_results
+    - debug:
+        var: dice_results
+
+    - name: "Roll a custom d15 die 5 times"
+      dice_module:
+        dice_side_number: 6
+        number_of_rolls: 20
+      register: dice_results
+    - debug:
+        var: dice_results
+
+    - name: "Roll damage with 4d8!"
+      dice_module:
+        dice_side_number: 8
+        number_of_rolls: 4
+      register: damage_results
+    - debug:
+        var: damage_results
+
+    - name: "Get the damage point total"
+      sum_module:
+        numbers: "{{ damage_results.custom_roll_result }}"
+      register: damage_sum
+    - debug:
+        var: damage_sum
+
+    - name: "Get data from the Hacker News API"
+      hn_top_stories:
+        number_of_entries: 20
+        story_id: True
+        author: True
+        comments: True
+      register: top_stories
+    - debug:
+        var: top_stories
