@@ -6,18 +6,24 @@ Some custom modules I've written to expand my use of Ansible.
 ### Module Descriptions
 
 
-#### `sum_module.py`
+#### `library/sum_two_module.py`
+
+Adds two numbers together.
+
+
+#### `library/sum_module.py`
 
 Adds a list of numbers together.
 
 
-#### `dice_module.py`
+#### `library/dice_module.py`
 
 The ~worst~ BEST way ever to roll dice! 😁
 
 Customize the number of sides you want your die to have (defaults to `20`), as well as the number of times you want to roll it (defaults to `1`).
 
-#### `hn_top_stories.py`
+
+#### `library/hn_top_stories.py`
 
 Gather data on the top `N` number of stories on [Hacker News](https://news.ycombinator.com/news).
 
@@ -28,6 +34,7 @@ Select the number of top stories via the `number_of_entries` parameter. Optional
 A more in-depth example of this module can be found [here](https://github.com/thenets/study-ansible/blob/main/how-to-create-a-module/library/get_news.py).
 
 > **NOTE:** This module requires `requests`.
+
 
 * * *
 
