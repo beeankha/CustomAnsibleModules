@@ -1,0 +1,78 @@
+# This playbook gets dynamic content via a custom Ansible Module,
+# generates a static web page, and then creates a container
+# web server to serve the static web page.
+
+---
+- name: Deploy news app
+  hosts: localhost
+  connection: local
+
+  vars:
+    expose_port: 8888
+
+  tasks:
+    - name: "Get news"
+      get_news:
+        number_of_news: 5
+      register: news_results
+
+    - name: Create './www/' dir
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/www/"
+        state: directory
+
+    # Create a single HTML file with news_results.news_html concatenated
+    - name: "Create news HTML file"
+      ansible.builtin.copy:
+        dest: "{{ playbook_dir }}/www/index.html"
+        content: |
+          <body style="background-color:#bac7d4" text="#1A1C1F">
+
+          {{ news_results.news_html | join('\n') }}
+
+          </body>
+
+
+    - name: "Check if Docker is installed and fallback to Podman instead"
+      block:
+        - name: Check for Docker installation and permission
+          ansible.builtin.shell:
+            cmd: "docker ps"
+          changed_when: false
+        - name: Using Docker as container runtime
+          ansible.builtin.set_fact:
+            container_runtime: docker
+      rescue:
+        - debug: msg="Docker is not installed, fallback to Podman"
+        - name: Using Podman as container runtime
+          ansible.builtin.set_fact:
+            container_runtime: podman
+
+    # The correct way to deploy a container using Ansible on Docker is
+    # the Docker collection:
+    # https://docs.ansible.com/ansible/latest/collections/community/docker/index.html
+    - name: Run Nginx container (docker)
+      ansible.builtin.shell:
+        cmd: |
+          # Delete any existent container
+          docker rm -f nginx-hacker-news || true
+          # Create a new one
+          docker run -d --name nginx-hacker-news \
+            -p {{ expose_port }}:80 \
+            -v {{ playbook_dir }}/www:/usr/share/nginx/html:ro \
+            docker.io/nginx:alpine
+
+    # Create the Nginx container using podman
+    # Note: if you have SELinux enabled, you need to
+    #       make sure you have permission to access the volume
+    - name: Run Nginx container (podman)
+      when: container_runtime == "podman"
+      containers.podman.podman_container:
+        executable: "{{ container_runtime }}"
+        name: nginx-hacker-news
+        image: docker.io/nginx:alpine
+        state: started
+        ports:
+          - "{{ expose_port }}:80"
+        volumes:
+          - "{{ playbook_dir }}/www:/usr/share/nginx/html:ro"
