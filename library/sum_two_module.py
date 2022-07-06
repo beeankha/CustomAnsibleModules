@@ -16,7 +16,7 @@ ANSIBLE_METADATA = {'status': ['preview'],
 
 DOCUMENTATION = '''
 ---
-module: sum_module
+module: sum_two_module
 author: "Bianca Henderson (@beeankha)"
 version_added: "2.9"
 short_description: A way to add two numbers together.

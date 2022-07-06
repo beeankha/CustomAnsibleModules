@@ -6,11 +6,9 @@
 
   tasks:
     - name: "Run addition module"
-      sum_module:
-        numbers:
-          - 3
-          - 5
-          - 9
+      sum_two_module:
+        number_one: 3
+        number_two: 5
       register: sum_results
     - debug:
         var: sum_results
@@ -23,8 +21,8 @@
 
     - name: "Roll a custom d15 die 5 times"
       dice_module:
-        dice_side_number: 6
-        number_of_rolls: 20
+        dice_side_number: 15
+        number_of_rolls: 5
       register: dice_results
     - debug:
         var: dice_results

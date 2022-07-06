@@ -76,7 +76,7 @@ def _parse_to_html_news(news):
     pretty_date = datetime.datetime.fromtimestamp(news["time"]).strftime('%Y-%m-%d %H:%M:%S')
     return f"""
     <li>
-        <a href="{news['url']}">{news['title']}</a>
+        <a href="https://news.ycombinator.com/item?id={news['id']}">{news['title']}</a>
         <p>{news['type']}</p>
         <p>{news['score']} points</p>
         <p>by {news['by']}</p>
